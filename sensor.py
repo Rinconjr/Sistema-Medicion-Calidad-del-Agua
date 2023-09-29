@@ -7,7 +7,8 @@ from configuracion import IP_PROXY, PUB_PORT_PROXY
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    context = zmq.Context()
+
+    context = zmq.Context() # Crea un contexto de comunicación
     socket = context.socket(zmq.PUB)
     socket.connect(f"tcp://{IP_PROXY}:{PUB_PORT_PROXY}") #Asocia el puerto de enlace en la direccion local
 
