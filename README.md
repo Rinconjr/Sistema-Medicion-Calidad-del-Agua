@@ -1,15 +1,20 @@
-# Sistema-Medicion-Calidad-del-Agua
-Proyecto para la materia Introduccion a Sistemas Distribuidos
+# Sistema Medición Calidad del Agua
+Proyecto para la materia Introducción a Sistemas Distribuidos
 
-===Requisitos===
-1. Tener python
-2. pip install pyzmq
+## Requisitos
+Instalar ZeroMQ para Python:
 
+    pip install pyzmq
 
-===Ejecucion===
+## Ejecución
+Proxy: 
 
-Inicias primero el publicador con
-python pubFair.py
+    python proxy.py
 
-Inicias luego los subscriptores con
-python subFair.py [Topico]
+Monitor: 
+
+    python monitor.py -s topico
+
+Sensor:
+
+    python sensor.py -s topico -t 5
