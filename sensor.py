@@ -11,8 +11,6 @@ from configuracion import IP_PROXY, PUB_PORT_PROXY
 # TODO 1: Hacer que llegue por argumento el archivo de configuracion, leer de este y generar los valores aleatorios para enviar a los monitores.
 
 probabilidades = {}
-valor_minimo = 0
-valor_maximo = 0
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -30,11 +28,11 @@ def main():
         print("Debes proporcionar un valor válido para el intervalo de tiempo (-t) mayor que 0.")
         return
 
-    leer_config(args.s)
-    send_topic(args.s, args.t)
+    valor_minimo, valor_maximo = leer_config(args.s)
+    send_topic(args.s, args.t, valor_minimo, valor_maximo)
 
 
-def send_topic(topic, tiempo):
+def send_topic(topic, tiempo, valor_minimo,valor_maximo):
     context = zmq.Context() # Crea un contexto de comunicación
     socket = context.socket(zmq.PUB)
     socket.connect(f"tcp://{IP_PROXY}:{PUB_PORT_PROXY}") # Asocia el puerto de enlace en la dirección local
@@ -48,7 +46,7 @@ def send_topic(topic, tiempo):
             valor = random.randint(valor_minimo,valor_maximo)+valor_maximo
             print(f"Fuera {valor}")
         else:
-            valor = random.randint(valor_minimo,valor_maximo)*-1
+            valor = -random.randint(valor_minimo,valor_maximo)
             print(f"Error {valor}")
 
         mensaje = f"Random {valor} "
@@ -81,6 +79,7 @@ def leer_config(topic):
     except Exception as e:
         print(f"Ocurrió un error inesperado: {str(e)}")
         exit(1)
+    return int(valor_minimo),int(valor_maximo)
 
 if __name__ == "__main__":
     main()
