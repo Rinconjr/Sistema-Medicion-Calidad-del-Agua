@@ -13,6 +13,7 @@ from configuracion import IP_PROXY, PUB_PORT_PROXY
 probabilidades = {}
 
 def main():
+    global valor_minimo, valor_maximo
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     parser = argparse.ArgumentParser(description="Suscripción a un tópico específico")
@@ -36,10 +37,10 @@ def main():
     else:
         valor_minimo, valor_maximo = 2, 11
 
-    leer_config(args.s)
-    send_topic(args.s, args.t, valor_minimo, valor_maximo)
+    leer_config()
+    send_topic(args.s, args.t)
 
-def generateRandomValue(valor_minimo,valor_maximo):
+def generateRandomValue():
     eleccion = random.choices(list(probabilidades.keys()), weights=list(probabilidades.values()))[0]
     if eleccion == "correcto":
         print("Se generara un valor correcto")
@@ -52,20 +53,20 @@ def generateRandomValue(valor_minimo,valor_maximo):
         return -random.randint(valor_minimo,valor_maximo)
 
 
-def send_topic(topic, tiempo, valor_minimo,valor_maximo):
+def send_topic(topic, tiempo):
     context = zmq.Context() # Crea un contexto de comunicación
     socket = context.socket(zmq.PUB)
     socket.connect(f"tcp://{IP_PROXY}:{PUB_PORT_PROXY}") # Asocia el puerto de enlace en la dirección local
     
     while True:
-        valor = generateRandomValue(valor_minimo,valor_maximo)
+        valor = generateRandomValue()
 
         mensaje = f"Random {valor} "
         print(f"Publicando en {topic} con valor {mensaje}")
         socket.send_string(f"{topic} {mensaje}")
         time.sleep(tiempo)
 
-def leer_config(topic):
+def leer_config():
 
     try:
         with open("configuracion.txt", "r") as archivo_config:
