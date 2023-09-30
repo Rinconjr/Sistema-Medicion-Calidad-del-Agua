@@ -1,6 +1,3 @@
 Valores_Correctos 0.6
 Valores_Fuera_De_Rango 0.3
 Errores 0.1
-Temperatura 68 89
-PH 6.0 8.0
-Oxigeno 2 11

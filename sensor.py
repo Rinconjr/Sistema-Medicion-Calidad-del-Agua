@@ -28,8 +28,28 @@ def main():
         print("Debes proporcionar un valor válido para el intervalo de tiempo (-t) mayor que 0.")
         return
 
-    valor_minimo, valor_maximo = leer_config(args.s)
+
+    if args.s == "Temperatura":
+        valor_minimo, valor_maximo = 68 , 89
+    elif args.s == "PH":
+        valor_minimo, valor_maximo = 6.0, 8.0
+    else:
+        valor_minimo, valor_maximo = 2, 11
+
+    leer_config(args.s)
     send_topic(args.s, args.t, valor_minimo, valor_maximo)
+
+def generateRandomValue(valor_minimo,valor_maximo):
+    eleccion = random.choices(list(probabilidades.keys()), weights=list(probabilidades.values()))[0]
+    if eleccion == "correcto":
+        print("Se generara un valor correcto")
+        return random.randint(valor_minimo,valor_maximo)
+    elif eleccion == "fuera_de_rango":
+        print("Se generara un valor fuera de rango")
+        return random.randint(valor_minimo,valor_maximo)+valor_maximo
+    else:
+        print("Se generara un valor incorrecto")
+        return -random.randint(valor_minimo,valor_maximo)
 
 
 def send_topic(topic, tiempo, valor_minimo,valor_maximo):
@@ -38,19 +58,10 @@ def send_topic(topic, tiempo, valor_minimo,valor_maximo):
     socket.connect(f"tcp://{IP_PROXY}:{PUB_PORT_PROXY}") # Asocia el puerto de enlace en la dirección local
     
     while True:
-        eleccion = random.choices(list(probabilidades.keys()), weights=list(probabilidades.values()))[0]
-        if eleccion == "correcto":
-            valor = random.randint(valor_minimo,valor_maximo)
-            print(f"Correcto {valor}")
-        elif eleccion == "fuera_de_rango":
-            valor = random.randint(valor_minimo,valor_maximo)+valor_maximo
-            print(f"Fuera {valor}")
-        else:
-            valor = -random.randint(valor_minimo,valor_maximo)
-            print(f"Error {valor}")
+        valor = generateRandomValue(valor_minimo,valor_maximo)
 
         mensaje = f"Random {valor} "
-        print(f"Publicando en {topic}")
+        print(f"Publicando en {topic} con valor {mensaje}")
         socket.send_string(f"{topic} {mensaje}")
         time.sleep(tiempo)
 
@@ -73,12 +84,6 @@ def leer_config(topic):
                     else:
                         raise ValueError("")
 
-                #Leer rango
-                elif len(palabras) == 3:
-                    if palabras[0] == topic:
-                        valor_minimo = float(palabras[1])
-                        valor_maximo = float(palabras[2])
-                
                 else:
                     raise ValueError("")
 
@@ -88,7 +93,6 @@ def leer_config(topic):
     except Exception as e:
         print(f"Ocurrió un error inesperado: {str(e)}")
         exit(1)
-    return valor_minimo,valor_maximo
 
 if __name__ == "__main__":
     main()
