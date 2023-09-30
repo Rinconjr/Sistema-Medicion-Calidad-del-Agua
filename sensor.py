@@ -1,3 +1,5 @@
+# Ejecucion: python sensor.py -s Topico -t 5
+
 import zmq
 import random
 import time
@@ -9,6 +11,8 @@ from configuracion import IP_PROXY, PUB_PORT_PROXY
 # TODO: Hacer que llegue por argumento el archivo de configuracion, leer de este y generar los valores aleatorios
 
 def main():
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
     parser = argparse.ArgumentParser(description="Suscripción a un tópico específico")
     parser.add_argument("-s", choices=["Temperatura", "PH", "Oxigeno"], help="Tópico al que suscribirse")
     parser.add_argument("-t", type=int, help="Intervalo de tiempo en segundos")
@@ -26,8 +30,6 @@ def main():
 
 
 def subscribe_to_topic(topic, tiempo):
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
-
     context = zmq.Context() # Crea un contexto de comunicación
     socket = context.socket(zmq.PUB)
     socket.connect(f"tcp://{IP_PROXY}:{PUB_PORT_PROXY}") # Asocia el puerto de enlace en la dirección local

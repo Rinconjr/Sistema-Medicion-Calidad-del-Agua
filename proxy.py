@@ -1,3 +1,5 @@
+# Ejecución: python proxy.py
+
 import zmq
 import signal
 

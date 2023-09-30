@@ -1,3 +1,5 @@
+# Ejecucion: python monitor.py -s Topico
+
 import zmq
 import argparse
 import signal
@@ -8,11 +10,10 @@ def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     parser = argparse.ArgumentParser(description="Suscrito a un tópico específico")
-    parser.add_argument("topic", choices=["Temperatura", "PH", "Oxigeno"], help="Tópico al que suscribirse")
+    parser.add_argument("-s", choices=["Temperatura", "PH", "Oxigeno"], required=True, help="Tópico al que suscribirse")
     args = parser.parse_args()
 
-    subscribe_to_topic(args.topic)
-
+    subscribe_to_topic(args.s)
 
 def subscribe_to_topic(topic):
     context = zmq.Context() # Crea un contexto de comunicación
