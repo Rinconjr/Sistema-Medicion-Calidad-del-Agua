@@ -55,6 +55,7 @@ def send_topic(topic, tiempo, valor_minimo,valor_maximo):
         time.sleep(tiempo)
 
 def leer_config(topic):
+
     try:
         with open("configuracion.txt", "r") as archivo_config:
 
@@ -69,17 +70,25 @@ def leer_config(topic):
                         probabilidades['fuera_de_rango'] = float(palabras[1])
                     elif palabras[0] == "Errores":
                         probabilidades['error'] = float(palabras[1])
-                
+                    else:
+                        raise ValueError("")
+
                 #Leer rango
                 elif len(palabras) == 3:
                     if palabras[0] == topic:
-                        valor_minimo = palabras[1]
-                        valor_maximo = palabras[2]
+                        valor_minimo = float(palabras[1])
+                        valor_maximo = float(palabras[2])
+                
+                else:
+                    raise ValueError("")
 
+    except ValueError:
+        print("Error de argumentos, revise que la informacion en configuracion.txt esta bien escrita")
+        exit(1)
     except Exception as e:
         print(f"Ocurrió un error inesperado: {str(e)}")
         exit(1)
-    return int(valor_minimo),int(valor_maximo)
+    return valor_minimo,valor_maximo
 
 if __name__ == "__main__":
     main()
