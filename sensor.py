@@ -18,26 +18,23 @@ class sensor:
     def generar_valor_aleatorio(self):
         eleccion = random.choices(list(self.probabilidades.keys()), weights=list(self.probabilidades.values()))[0]
         if eleccion == "correcto":
-            print("Se generara un valor correcto")
-            return random.randint(self.valor_minimo,self.valor_maximo)
+            return random.uniform(self.valor_minimo,self.valor_maximo)
         elif eleccion == "fuera_de_rango":
-            print("Se generara un valor fuera de rango")
-            return random.randint(self.valor_minimo,self.valor_maximo)+self.valor_maximo
+            return random.uniform(self.valor_minimo,self.valor_maximo)+self.valor_maximo
         else:
-            print("Se generara un valor incorrecto")
-            return -random.randint(self.valor_minimo,self.valor_maximo)
+            return -random.uniform(self.valor_minimo,self.valor_maximo)
 
     def enviar_topico(self,topic, tiempo):
         context = zmq.Context() # Crea un contexto de comunicación
         socket = context.socket(zmq.PUB)
         socket.connect(f"tcp://{IP_PROXY}:{PUB_PORT_PROXY}") # Asocia el puerto de enlace en la dirección local
+
+        print("Sensor activado...")
         
         while True:
-            valor = self.generar_valor_aleatorio()
-
-            mensaje = f"Random {valor} "
-            print(f"Publicando en {topic} con valor {mensaje}")
-            socket.send_string(f"{topic} {mensaje}")
+            valor = round(float(self.generar_valor_aleatorio()),2)
+            #print(f"Publicando en {topic} con valor {valor}")
+            socket.send_string(f"{topic} {valor}")
             time.sleep(tiempo)
 
     def leer_config(self):
@@ -82,7 +79,6 @@ def main():
     if args.t is None or args.t <= 0:
         print("Debes proporcionar un valor válido para el intervalo de tiempo (-t) mayor que 0.")
         return
-
 
     if args.s == "Temperatura":
         valor_minimo, valor_maximo = 68 , 89
