@@ -8,7 +8,7 @@ import argparse
 
 from configuracion import IP_PROXY, PUB_PORT_PROXY
 
-# TODO: Hacer que llegue por argumento el archivo de configuracion, leer de este y generar los valores aleatorios
+# TODO: Hacer que llegue por argumento el archivo de configuracion, leer de este y generar los valores aleatorios para enviar a los monitores.
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
