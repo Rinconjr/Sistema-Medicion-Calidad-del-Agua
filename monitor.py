@@ -6,6 +6,8 @@ import signal
 
 from configuracion import IP_PROXY, SUB_PORT_PROXY
 
+# TODO 2: Revisar porque el primer valor enviado NO llega al monitor.
+
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 

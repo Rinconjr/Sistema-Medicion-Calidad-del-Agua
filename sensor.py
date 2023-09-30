@@ -8,7 +8,7 @@ import argparse
 
 from configuracion import IP_PROXY, PUB_PORT_PROXY
 
-# TODO: Hacer que llegue por argumento el archivo de configuracion, leer de este y generar los valores aleatorios para enviar a los monitores.
+# TODO 1: Hacer que llegue por argumento el archivo de configuracion, leer de este y generar los valores aleatorios para enviar a los monitores.
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -26,10 +26,10 @@ def main():
         print("Debes proporcionar un valor válido para el intervalo de tiempo (-t) mayor que 0.")
         return
 
-    subscribe_to_topic(args.s, args.t)
+    send_topic(args.s, args.t)
 
 
-def subscribe_to_topic(topic, tiempo):
+def send_topic(topic, tiempo):
     context = zmq.Context() # Crea un contexto de comunicación
     socket = context.socket(zmq.PUB)
     socket.connect(f"tcp://{IP_PROXY}:{PUB_PORT_PROXY}") # Asocia el puerto de enlace en la dirección local
