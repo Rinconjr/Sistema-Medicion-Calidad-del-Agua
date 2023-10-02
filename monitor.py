@@ -26,6 +26,8 @@ class monitor:
         else:
             self.valor_minimo, self.valor_maximo = 2, 11
 
+        print(f"Monitor activado para el tópico {self.topic}...")
+
         while True:
             topic, message = socket.recv_string().split(' ', 1)
             print(f"Recibido en {topic}: Valor: {message}")
@@ -44,12 +46,15 @@ class monitor:
 
     def enviar_alarma(self,valor):
         #print("CALIDAD")
+        pass
 
     def enviar_datos_BDD(self,valor):
         #print("BDD")
+        pass
 
     def enviar_dato_BDD_replica(self,valor):
         #print("Replica")
+        pass
 
 def main():
 
