@@ -3,6 +3,8 @@
 import zmq
 import argparse
 
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 from configuracion import IP_PROXY, SUB_PORT_PROXY
 
 # TODO 2: Revisar porque el primer valor enviado NO llega al monitor.
@@ -36,25 +38,33 @@ class monitor:
     def revisar_valor(self, valor):
         if valor >= self.valor_minimo and valor <= self.valor_maximo:
             print("Correcto")
-            self.enviar_datos_BDD(valor)
+            self.enviar_dato_BDD(valor)
         elif valor < 0:
             print("Incorrecto")
         else:
             print("fuera_de_rango")
             self.enviar_alarma(valor)
-            self.enviar_datos_BDD(valor)
+            self.enviar_dato_BDD(valor)
 
     def enviar_alarma(self,valor):
         #print("CALIDAD")
         pass
 
-    def enviar_datos_BDD(self,valor):
-        #print("BDD")
-        pass
+    def enviar_dato_BDD(self,valor):
+        uri = "mongodb+srv://nicorinconb:8uDjmict3XYbu00H@sistemacalidadagua.hyxzpxx.mongodb.net/?retryWrites=true&w=majority"
+        #Crear cliente para conectarse a la base de datos
+        client = MongoClient(uri, server_api=ServerApi('1'))
+        db = client['calidadAgua']
+        collection = db['mediciones']
 
-    def enviar_dato_BDD_replica(self,valor):
-        #print("Replica")
-        pass
+        collection.insert_one(self.convertir_a_json(self.topic, valor))
+
+    # Convertir a json para enviar a la base de datos
+    def convertir_a_json(self, topic, valor):
+        return {
+            "topico": topic,
+            "valor": valor
+            }
 
 def main():
 
