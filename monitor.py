@@ -51,7 +51,7 @@ class monitor:
         pass
 
     def enviar_dato_BDD(self,valor):
-        uri = "mongodb+srv://nicorinconb:8uDjmict3XYbu00H@sistemacalidadagua.hyxzpxx.mongodb.net/?retryWrites=true&w=majority"
+        uri = "mongodb+srv://nicorinconb:8uDjmict3XYbu00H@sistemacalidadagua.hyxzpxx.mongodb.net/?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
         #Crear cliente para conectarse a la base de datos
         client = MongoClient(uri, server_api=ServerApi('1'))
         db = client['calidadAgua']
