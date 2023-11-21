@@ -2,10 +2,11 @@
 
 import zmq
 import argparse
+import threading
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from configuracion import IP_PROXY, SUB_PORT_PROXY
+from configuracion import IP_PROXY, SUB_PORT_PROXY, IP_CALIDAD, PORT_CALIDAD
 
 # TODO 2: Revisar porque el primer valor enviado NO llega al monitor.
 
@@ -46,9 +47,20 @@ class monitor:
             self.enviar_alarma(valor)
             self.enviar_dato_BDD(valor)
 
-    def enviar_alarma(self,valor):
-        #print("CALIDAD")
-        pass
+    def enviar_alarma(self, valor):
+        if valor < self.valor_minimo or valor > self.valor_maximo:
+            mensaje = f"{self.topic} fuera de rango {valor}"
+
+            def enviar_a_calidad(mensaje):
+                context = zmq.Context()
+                socket = context.socket(zmq.PUSH)
+                socket.connect(f"tcp://{IP_CALIDAD}:{PORT_CALIDAD}")  # Ajusta la dirección y el puerto según tus necesidades
+                socket.send_string(mensaje)
+                socket.close()
+
+            # Crear y ejecutar el hilo para el envío del mensaje
+            thread = threading.Thread(target=enviar_a_calidad, args=(mensaje,))
+            thread.start()
 
     def enviar_dato_BDD(self,valor):
         uri = "mongodb+srv://nicorinconb:8uDjmict3XYbu00H@sistemacalidadagua.hyxzpxx.mongodb.net/?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
