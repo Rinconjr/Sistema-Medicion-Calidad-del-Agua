@@ -55,18 +55,20 @@ class monitor:
             self.enviar_dato_BDD(valor, fecha_hora)
 
     def enviar_alarma(self, valor):
-        if valor < self.valor_minimo or valor > self.valor_maximo:
-            mensaje = f"{self.topic} fuera de rango {valor}"
+        if valor < self.valor_minimo:
+            mensaje = f"{self.topic} debajo del mínimo {valor}."
+        else:
+            mensaje = f"{self.topic} arriba del máximo {valor}."
 
-            def enviar_a_calidad(mensaje):
-                context = zmq.Context()
-                socket = context.socket(zmq.PUSH)
-                socket.connect(f"tcp://{IP_CALIDAD}:{PORT_CALIDAD}")
-                socket.send_string(mensaje)
-                socket.close()
+        def enviar_a_calidad(mensaje):
+            context = zmq.Context()
+            socket = context.socket(zmq.PUSH)
+            socket.connect(f"tcp://{IP_CALIDAD}:{PORT_CALIDAD}")
+            socket.send_string(mensaje)
+            socket.close()
 
-            thread = threading.Thread(target=enviar_a_calidad, args=(mensaje,), daemon=True)
-            thread.start()
+        thread = threading.Thread(target=enviar_a_calidad, args=(mensaje,), daemon=True)
+        thread.start()
 
     def enviar_dato_BDD(self, valor, fecha_hora):
         uri = "mongodb+srv://nicorinconb:8uDjmict3XYbu00H@sistemacalidadagua.hyxzpxx.mongodb.net/?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"

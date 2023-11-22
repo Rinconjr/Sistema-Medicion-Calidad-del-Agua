@@ -21,9 +21,12 @@ class sensor:
         if eleccion == "correcto":
             return random.uniform(self.valor_minimo,self.valor_maximo)
         elif eleccion == "fuera_de_rango":
-            return random.uniform(self.valor_minimo,self.valor_maximo)+self.valor_maximo
+            if random.choice([True,False]):
+                return random.uniform(0,self.valor_minimo-1) # Genera un valor menor al minimo
+            else:
+                return random.uniform(self.valor_maximo,100) # Genera un valor mayor al maximo
         else:
-            return -random.uniform(self.valor_minimo,self.valor_maximo)
+            return -random.uniform(self.valor_minimo+1,self.valor_maximo)
 
     def enviar_topico(self,topic, tiempo):
         context = zmq.Context() # Crea un contexto de comunicación

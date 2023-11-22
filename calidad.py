@@ -11,7 +11,7 @@ def recibir_alarma():
 
     while True:
         mensaje = socket.recv_string()
-        print(f"{mensaje}")
+        print(f"Alarma! Valor de {mensaje}")
 
 if __name__ == "__main__":
     print("El módulo 'calidad' se está ejecutando correctamente.")
