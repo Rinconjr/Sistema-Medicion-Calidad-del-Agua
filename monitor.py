@@ -7,6 +7,7 @@ import os
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
+from datetime import datetime
 from configuracion import IP_PROXY, SUB_PORT_PROXY, IP_CALIDAD, PORT_CALIDAD, IP_HEALTHCHECK, PORT_HEALTHCHECK
 
 class monitor:
@@ -33,23 +34,25 @@ class monitor:
 
         while self.is_running:
             try:
-                topic, message = socket.recv_string().split(' ', 1)
-                print(f"Recibido en {topic}: Valor: {message}")
-                self.revisar_valor(float(message))
+                topic, valor, fecha_hora = socket.recv_string().split(' ', 2)
+                fecha_hora = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
+                print(f"Recibido en: {topic}, Valor: {valor} Fecha y hora: {fecha_hora}")
+                valor = float(valor)
+                self.revisar_valor(valor, fecha_hora)
             except zmq.ContextTerminated:
                 print("Contexto de zmq terminado. Saliendo...")
                 break
 
-    def revisar_valor(self, valor):
+    def revisar_valor(self, valor, fecha_hora):
         if valor >= self.valor_minimo and valor <= self.valor_maximo:
             print("Correcto")
-            self.enviar_dato_BDD(valor)
+            self.enviar_dato_BDD(valor, fecha_hora)
         elif valor < 0:
             print("Incorrecto")
         else:
             print("fuera_de_rango")
             self.enviar_alarma(valor)
-            self.enviar_dato_BDD(valor)
+            self.enviar_dato_BDD(valor, fecha_hora)
 
     def enviar_alarma(self, valor):
         if valor < self.valor_minimo or valor > self.valor_maximo:
@@ -65,18 +68,19 @@ class monitor:
             thread = threading.Thread(target=enviar_a_calidad, args=(mensaje,), daemon=True)
             thread.start()
 
-    def enviar_dato_BDD(self, valor):
+    def enviar_dato_BDD(self, valor, fecha_hora):
         uri = "mongodb+srv://nicorinconb:8uDjmict3XYbu00H@sistemacalidadagua.hyxzpxx.mongodb.net/?retryWrites=true&w=majority&tlsAllowInvalidCertificates=true"
         client = MongoClient(uri, server_api=ServerApi('1'))
         db = client['calidadAgua']
         collection = db['mediciones']
 
-        collection.insert_one(self.convertir_a_json(self.topic, valor))
+        collection.insert_one(self.convertir_a_json(self.topic, valor,fecha_hora))
 
-    def convertir_a_json(self, topic, valor):
+    def convertir_a_json(self, topic, valor, fecha_hora):
         return {
             "topico": topic,
-            "valor": valor
+            "valor": valor,
+            "fecha_hora": fecha_hora.strftime("%Y-%m-%d %H:%M:%S")
         }
 
     def enviar_mensaje(self,ip, pid):
