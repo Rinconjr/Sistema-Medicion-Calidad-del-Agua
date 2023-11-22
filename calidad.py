@@ -14,6 +14,6 @@ def recibir_alarma():
         print(f"{mensaje}")
 
 if __name__ == "__main__":
-    print("El módulo 'calidad' se está ejecutando correctamente.")
+    print("El módulo 'calidad' se está ejecutando directamente.")
 
     recibir_alarma()
