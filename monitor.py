@@ -82,11 +82,15 @@ class monitor:
     def enviar_mensaje(self,ip, pid):
         while True:
             try:
-                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client_socket.connect((IP_HEALTHCHECK, PORT_HEALTHCHECK))
+                context = zmq.Context()
+
+                # Socket para enviar datos
+                sender_socket = context.socket(zmq.PUSH)
+                sender_socket.connect(f"tcp://{IP_HEALTHCHECK}:{PORT_HEALTHCHECK}")
+                
+                
                 mensaje = '{"ip": "'+ str(ip)+'", "pid": '+ str(pid) +', "tipo": "'+ self.topic +'", "mensaje": "OK"}'
-                client_socket.sendall(mensaje.encode())
-                client_socket.close()
+                sender_socket.send_string(str(mensaje))
                 time.sleep(1)
             except (ConnectionRefusedError, OSError):
                 print("Error de conexión. Saliendo...")

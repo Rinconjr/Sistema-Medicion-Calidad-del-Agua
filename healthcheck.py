@@ -3,6 +3,7 @@ import threading
 import time
 import json
 import datetime
+import zmq
 
 import os
 from configuracion import IP_HEALTHCHECK, PORT_HEALTHCHECK
@@ -15,15 +16,19 @@ class healthcheck:
         self.is_running = True
 
     def healthcheck_server(self):
-        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_socket.bind((IP_HEALTHCHECK, PORT_HEALTHCHECK))
-        server_socket.listen(5)
+        context = zmq.Context()
+
+        # Socket para recibir datos
+        receiver_socket = context.socket(zmq.PULL)
+        receiver_socket.bind(f"tcp://{IP_HEALTHCHECK}:{PORT_HEALTHCHECK}")
+        
+        #server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #server_socket.bind((IP_HEALTHCHECK, PORT_HEALTHCHECK))
+        #server_socket.listen(5)
         print(f"Healthcheck server en el puerto {PORT_HEALTHCHECK}")
 
         while True:
-            client_socket, client_address = server_socket.accept()
-            mensaje = client_socket.recv(1024).decode()
-            client_socket.close()
+            mensaje = receiver_socket.recv_string()
 
             datos_json = json.loads(mensaje)
 
@@ -44,14 +49,13 @@ class healthcheck:
                 print("Se ha reportado " + str(datos_json["ip"]) + " : " + str(datos_json["pid"]) + " : " + str(datos_json["tipo"]))
 
     def verificar_procesos(self):
+        timeout = 5
         while True:
-            time.sleep(1)
-
             hora_actual = datetime.datetime.now()
             with mutex:
                 for monitor in monitores:
                     # Si al cabo de 5 segundos el monitor no se reporta, se da por muerto
-                    if (hora_actual - monitor["datetime"]).total_seconds() > 5:
+                    if (hora_actual - monitor["datetime"]).total_seconds() > timeout:
                         print("El monitor con ip " + str(monitor["ip"]) + " y pid " + str(monitor["pid"]) + " ha muerto")
                         tipoMonitor = str(monitor["tipo"])
                         monitores.remove(monitor)
