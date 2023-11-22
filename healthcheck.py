@@ -17,18 +17,16 @@ class healthcheck:
 
     def healthcheck_server(self):
         context = zmq.Context()
+        socket_sub = context.socket(zmq.SUB)
+        socket_sub.bind(f"tcp://{IP_HEALTHCHECK}:{PORT_HEALTHCHECK}")
 
-        # Socket para recibir datos
-        receiver_socket = context.socket(zmq.PULL)
-        receiver_socket.bind(f"tcp://{IP_HEALTHCHECK}:{PORT_HEALTHCHECK}")
-        
-        #server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #server_socket.bind((IP_HEALTHCHECK, PORT_HEALTHCHECK))
-        #server_socket.listen(5)
+        # Suscribe a todos los mensajes
+        socket_sub.setsockopt_string(zmq.SUBSCRIBE, "")
+
         print(f"Healthcheck server en el puerto {PORT_HEALTHCHECK}")
 
         while True:
-            mensaje = receiver_socket.recv_string()
+            mensaje = socket_sub.recv_string()
 
             datos_json = json.loads(mensaje)
 

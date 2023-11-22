@@ -86,17 +86,16 @@ class monitor:
         }
 
     def enviar_mensaje(self,ip, pid):
+        context = zmq.Context()
+        socket_pub = context.socket(zmq.PUB)
+        socket_pub.connect("tcp://127.0.0.1:5555")
         while True:
             try:
                 context = zmq.Context()
-
                 # Socket para enviar datos
-                sender_socket = context.socket(zmq.PUSH)
-                sender_socket.connect(f"tcp://{IP_HEALTHCHECK}:{PORT_HEALTHCHECK}")
-                
                 
                 mensaje = '{"ip": "'+ str(ip)+'", "pid": '+ str(pid) +', "tipo": "'+ self.topic +'", "mensaje": "OK"}'
-                sender_socket.send_string(str(mensaje))
+                socket_pub.send_string(str(mensaje))
                 time.sleep(1)
             except (ConnectionRefusedError, OSError):
                 print("Error de conexión. Saliendo...")
