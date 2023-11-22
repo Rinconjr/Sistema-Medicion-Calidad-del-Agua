@@ -44,9 +44,9 @@ class healthcheck:
                 if not found:
                     datos_json["datetime"] = datetime.datetime.now()
                     monitores.append(datos_json)
-                    print("Se ha añadido un nuevo monitor")
+                    print("Se ha añadido un nuevo monitor. " + str(datos_json["tipo"]))
                 
-                print("Se ha reportado " + str(datos_json["ip"]) + " : " + str(datos_json["pid"]) + " : " + str(datos_json["tipo"]))
+                print("Se ha reportado " + str(datos_json["tipo"]))
 
     def verificar_procesos(self):
         timeout = 5
@@ -56,7 +56,7 @@ class healthcheck:
                 for monitor in monitores:
                     # Si al cabo de 5 segundos el monitor no se reporta, se da por muerto
                     if (hora_actual - monitor["datetime"]).total_seconds() > timeout:
-                        print("El monitor con ip " + str(monitor["ip"]) + " y pid " + str(monitor["pid"]) + " ha muerto")
+                        print("El monitor de tipo " + str(monitor["tipo"]) + " ha muerto")
                         tipoMonitor = str(monitor["tipo"])
                         monitores.remove(monitor)
                         os.system('start cmd /k python monitor.py -s ' + tipoMonitor) # Tengan cuidado si van a editar esta parte del codigo porque pueden abrir terminales recursivamente                        

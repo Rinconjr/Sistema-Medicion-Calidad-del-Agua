@@ -36,7 +36,7 @@ class monitor:
             try:
                 topic, valor, fecha_hora = socket.recv_string().split(' ', 2)
                 fecha_hora = datetime.strptime(fecha_hora, "%Y-%m-%d %H:%M:%S")
-                print(f"Recibido en: {topic}, Valor: {valor} Fecha y hora: {fecha_hora}")
+                print(f"Recibido en: {topic}, Valor: {valor}, Fecha y hora: {fecha_hora}")
                 valor = float(valor)
                 self.revisar_valor(valor, fecha_hora)
             except zmq.ContextTerminated:
