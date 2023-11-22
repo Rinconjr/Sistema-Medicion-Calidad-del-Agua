@@ -24,7 +24,7 @@ class sensor:
             if random.choice([True,False]):
                 return random.uniform(0,self.valor_minimo-1) # Genera un valor menor al minimo
             else:
-                return random.uniform(self.valor_maximo,100) # Genera un valor mayor al maximo
+                return random.uniform(self.valor_maximo+1,100) # Genera un valor mayor al maximo
         else:
             return -random.uniform(self.valor_minimo+1,self.valor_maximo)
 
