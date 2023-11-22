@@ -7,6 +7,7 @@ import signal
 import argparse
 
 from configuracion import IP_PROXY, PUB_PORT_PROXY
+from datetime import datetime
 
 class sensor:
     #Constructor
@@ -33,8 +34,9 @@ class sensor:
         
         while True:
             valor = round(float(self.generar_valor_aleatorio()),2)
-            #print(f"Publicando en {topic} con valor {valor}")
-            socket.send_string(f"{topic} {valor}")
+            fecha_hora_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S") #Calcula la fecha y hora actual
+            mensaje = f"{topic} {valor} {fecha_hora_actual}"
+            socket.send_string(mensaje)
             time.sleep(tiempo)
 
     def leer_config(self):
