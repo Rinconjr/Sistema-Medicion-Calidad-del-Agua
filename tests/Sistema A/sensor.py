@@ -35,7 +35,7 @@ class sensor:
 
         print("Sensor activado...")
         
-        while True:
+        for _ in range(60):
             time.sleep(tiempo)
             valor = round(float(self.generar_valor_aleatorio()),2)
             fecha_hora_actual = datetime.datetime.now().strftime("%H:%M:%S.%f") #Calcula la fecha y hora actual
