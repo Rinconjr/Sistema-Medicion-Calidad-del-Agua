@@ -18,3 +18,11 @@ Monitor:
 Sensor:
 
     python sensor.py -s topico -t 5
+
+Calidad:
+
+    python calidad.py
+
+HealthCheck:
+
+    python healthcheck.py
