@@ -34,10 +34,6 @@ class monitor:
 
         print(f"Monitor activado para el tópico {self.topic}...")
 
-        # Iniciar el proceso dummy en un hilo aparte
-        dummy_thread = threading.Thread(target=self.proceso_dummy)
-        dummy_thread.start()
-
         while self.is_running:
             try:
                 topic, valor, fecha_hora = socket.recv_string().split(' ', 2)
@@ -113,17 +109,6 @@ class monitor:
             except (ConnectionRefusedError, OSError):
                 print("Error de conexión. Saliendo...")
                 break
-    
-    def proceso_dummy(self):
-        # Simulación de un proceso dummy
-        while True:
-            print("Proceso dummy en ejecución...")
-            result = 0
-            
-            for i in range(1000):
-                for e in range(1000):
-                    for f in range(1000):
-                        result += math.sin(math.sqrt(i))
                     
 def main():
     parser = argparse.ArgumentParser(description="Suscrito a un tópico específico")
