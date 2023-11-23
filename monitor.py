@@ -88,7 +88,7 @@ class monitor:
     def enviar_mensaje(self,ip, pid):
         context = zmq.Context()
         socket_pub = context.socket(zmq.PUB)
-        socket_pub.connect("tcp://127.0.0.1:5555")
+        socket_pub.connect(f"tcp://{IP_HEALTHCHECK}:{PORT_HEALTHCHECK}")
         while True:
             try:
                 context = zmq.Context()
