@@ -33,17 +33,15 @@ class sensor:
         socket = context.socket(zmq.PUB)
         socket.connect(f"tcp://{IP_PROXY}:{PUB_PORT_PROXY}") # Asocia el puerto de enlace en la dirección local
 
-        time.sleep(2)  # Espera 2 segundos para dar tiempo al monitor a suscribirse
-
         print("Sensor activado...")
         
         while True:
+            time.sleep(tiempo)
             valor = round(float(self.generar_valor_aleatorio()),2)
             fecha_hora_actual = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") #Calcula la fecha y hora actual
             mensaje = f"{topic} {valor} {fecha_hora_actual}"
             socket.send_string(mensaje)
             print(f"Enviando: {mensaje}")
-            time.sleep(tiempo)
 
     def leer_config(self):
         try:
