@@ -5,7 +5,7 @@ import time
 import socket
 import os
 import datetime
-import math
+import csv
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -34,6 +34,10 @@ class monitor:
 
         print(f"Monitor activado para el tópico {self.topic}...")
 
+        with open('mediciones_A.csv', mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Valor', 'Delay'])
+
         while self.is_running:
             try:
                 topic, valor, fecha_hora = socket.recv_string().split(' ', 2)
@@ -45,6 +49,11 @@ class monitor:
                 delay = tiempo_final - fecha_hora
                 valor = float(valor)
                 print(f"Tiempo de retraso: {delay}")
+
+                # Guardar en el archivo CSV
+                with open('mediciones_A.csv', mode='a', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([valor, delay.total_seconds()])
 
                 self.revisar_valor(valor, fecha_hora)
 

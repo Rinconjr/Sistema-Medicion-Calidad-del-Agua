@@ -6,6 +6,7 @@ import socket
 import os
 import datetime
 import math
+import csv
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -34,9 +35,10 @@ class monitor:
 
         print(f"Monitor activado para el tópico {self.topic}...")
 
-        # Iniciar el proceso dummy en un hilo aparte
-        dummy_thread = threading.Thread(target=self.proceso_dummy)
-        dummy_thread.start()
+        # Crear archivo CSV
+        with open('mediciones_B.csv', mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Valor', 'Delay'])
 
         while self.is_running:
             try:
@@ -50,12 +52,17 @@ class monitor:
                 valor = float(valor)
                 print(f"Tiempo de retraso: {delay}")
 
+                # Guardar en el archivo CSV
+                with open('mediciones_B.csv', mode='a', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow([valor, delay.total_seconds()])
+
                 self.revisar_valor(valor, fecha_hora)
 
             except zmq.ContextTerminated:
                 print("Contexto de zmq terminado. Saliendo...")
                 break
-
+    
     def revisar_valor(self, valor, fecha_hora):
         if valor >= self.valor_minimo and valor <= self.valor_maximo:
             print("Correcto")
